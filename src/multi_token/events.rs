@@ -1,4 +1,4 @@
-//! Standard for nep171 (Non-Fungible Token) events.
+//! Standard for nep246 (Non-Fungible Token) events.
 //!
 //! These events will be picked up by the NEAR indexer.
 //!
@@ -35,7 +35,7 @@ impl MtMint<'_> {
     /// Emits an mt mint event, through [`env::log_str`](near_sdk::env::log_str),
     /// where each [`MtMint`] represents the data of each mint.
     pub fn emit_many(data: &[MtMint<'_>]) {
-        new_171_v1(Nep171EventKind::MtMint(data)).emit()
+        new_246_v1(Nep246EventKind::MtMint(data)).emit()
     }
 }
 
@@ -63,7 +63,7 @@ impl MtTransfer<'_> {
     /// Emits an mt transfer event, through [`env::log_str`](near_sdk::env::log_str),
     /// where each [`MtTransfer`] represents the data of each transfer.
     pub fn emit_many(data: &[MtTransfer<'_>]) {
-        new_171_v1(Nep171EventKind::MtTransfer(data)).emit()
+        new_246_v1(Nep246EventKind::MtTransfer(data)).emit()
     }
 }
 
@@ -89,36 +89,36 @@ impl MtBurn<'_> {
     /// Emits an Mt burn event, through [`env::log_str`](near_sdk::env::log_str),
     /// where each [`MtBurn`] represents the data of each burn.
     pub fn emit_many<'a>(data: &'a [MtBurn<'a>]) {
-        new_171_v1(Nep171EventKind::MtBurn(data)).emit()
+        new_246_v1(Nep246EventKind::MtBurn(data)).emit()
     }
 }
 
 #[derive(Serialize, Debug)]
-pub(crate) struct Nep171Event<'a> {
+pub(crate) struct Nep246Event<'a> {
     version: &'static str,
     #[serde(flatten)]
-    event_kind: Nep171EventKind<'a>,
+    event_kind: Nep246EventKind<'a>,
 }
 
 #[derive(Serialize, Debug)]
 #[serde(tag = "event", content = "data")]
 #[serde(rename_all = "snake_case")]
 #[allow(clippy::enum_variant_names)]
-enum Nep171EventKind<'a> {
+enum Nep246EventKind<'a> {
     MtMint(&'a [MtMint<'a>]),
     MtTransfer(&'a [MtTransfer<'a>]),
     MtBurn(&'a [MtBurn<'a>]),
 }
 
-fn new_171<'a>(version: &'static str, event_kind: Nep171EventKind<'a>) -> NearEvent<'a> {
-    NearEvent::Nep171(Nep171Event {
+fn new_246<'a>(version: &'static str, event_kind: Nep246EventKind<'a>) -> NearEvent<'a> {
+    NearEvent::Nep246(Nep246Event {
         version,
         event_kind,
     })
 }
 
-fn new_171_v1(event_kind: Nep171EventKind) -> NearEvent {
-    new_171("1.0.0", event_kind)
+fn new_246_v1(event_kind: Nep246EventKind) -> NearEvent {
+    new_246("1.0.0", event_kind)
 }
 
 #[cfg(test)]
@@ -146,7 +146,7 @@ mod tests {
         .emit();
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_mint","data":[{"owner_id":"bob","token_ids":["0","1"]}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_mint","data":[{"owner_id":"bob","token_ids":["0","1"]}]}"#
         );
     }
 
@@ -169,7 +169,7 @@ mod tests {
         ]);
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_mint","data":[{"owner_id":"bob","token_ids":["0","1"]},{"owner_id":"alice","token_ids":["2","3"],"memo":"has memo"}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_mint","data":[{"owner_id":"bob","token_ids":["0","1"]},{"owner_id":"alice","token_ids":["2","3"],"memo":"has memo"}]}"#
         );
     }
 
@@ -186,7 +186,7 @@ mod tests {
         .emit();
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_burn","data":[{"owner_id":"bob","token_ids":["0","1"]}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_burn","data":[{"owner_id":"bob","token_ids":["0","1"]}]}"#
         );
     }
 
@@ -210,7 +210,7 @@ mod tests {
         ]);
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_burn","data":[{"owner_id":"alice","token_ids":["2","3"],"authorized_id":"bob","memo":"has memo"},{"owner_id":"bob","token_ids":["0","1"]}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_burn","data":[{"owner_id":"alice","token_ids":["2","3"],"authorized_id":"bob","memo":"has memo"},{"owner_id":"bob","token_ids":["0","1"]}]}"#
         );
     }
 
@@ -229,7 +229,7 @@ mod tests {
         .emit();
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_transfer","data":[{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_transfer","data":[{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
         );
     }
 
@@ -256,7 +256,7 @@ mod tests {
         ]);
         assert_eq!(
             test_utils::get_logs()[0],
-            r#"EVENT_JSON:{"standard":"nep171","version":"1.0.0","event":"mt_transfer","data":[{"old_owner_id":"alice","new_owner_id":"bob","token_ids":["2","3"],"authorized_id":"bob","memo":"has memo"},{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
+            r#"EVENT_JSON:{"standard":"nep246","version":"1.0.0","event":"mt_transfer","data":[{"old_owner_id":"alice","new_owner_id":"bob","token_ids":["2","3"],"authorized_id":"bob","memo":"has memo"},{"old_owner_id":"bob","new_owner_id":"alice","token_ids":["0","1"]}]}"#
         );
     }
 }
