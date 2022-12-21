@@ -1,4 +1,4 @@
-use crate::non_fungible_token::token::TokenId;
+use crate::multi_token::token::TokenId;
 use near_sdk::{ext_contract, AccountId};
 
 /// Approval receiver is the trait for the method called (or attempted to be called) when an MT contract adds an approval for an account.
