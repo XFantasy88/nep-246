@@ -1,29 +1,18 @@
-use crate::multi_token::core::ApprovalId;
 use crate::multi_token::metadata::TokenMetadata;
-use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::serde::{Deserialize, Serialize};
-pub use near_sdk::{AccountId, Balance};
+use near_sdk::AccountId;
 use std::collections::HashMap;
 
-/// Type alias for convenience
+/// Note that token IDs for MTs are strings on NEAR. It's still fine to use autoincrementing numbers as unique IDs if desired, but they should be stringified. This is to make IDs more future-proof as chain-agnostic conventions and standards arise, and allows for more flexibility with considerations like bridging MTs across chains, etc.
 pub type TokenId = String;
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, BorshDeserialize, BorshSerialize)]
+/// In this implementation, the Token struct takes two extensions standards (metadata and approval) as optional fields, as they are frequently used in modern MTs.
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[cfg_attr(feature = "abi", derive(schemars::JsonSchema))]
 #[serde(crate = "near_sdk::serde")]
-pub struct Approval {
-    pub amount: u128,
-    pub approval_id: ApprovalId,
-}
-
-/// Info on individual token
-#[derive(Debug, BorshDeserialize, BorshSerialize, Serialize, Deserialize)]
 pub struct Token {
-    pub token_id: String,
+    pub token_id: TokenId,
     pub owner_id: AccountId,
-    /// Total amount generated
-    pub supply: u128,
-    pub balances: HashMap<AccountId, Balance>,
     pub metadata: Option<TokenMetadata>,
-    pub approvals: Option<HashMap<AccountId, Approval>>,
-    pub next_approval_id: Option<u64>,
+    pub approved_account_ids: Option<HashMap<AccountId, u64>>,
 }
