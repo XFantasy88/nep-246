@@ -6,7 +6,7 @@ use serde::Serialize;
 #[must_use = "don't forget to `.emit()` this event"]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum NearEvent<'a> {
-    Nep246(super::multi_token::events::Nep246Event<'a>),
+    Nep246(crate::multi_token::events::Nep246Event<'a>),
 }
 
 impl<'a> NearEvent<'a> {
