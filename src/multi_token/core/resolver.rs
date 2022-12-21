@@ -1,4 +1,4 @@
-use crate::non_fungible_token::token::TokenId;
+use crate::multi_token::token::TokenId;
 use near_sdk::{ext_contract, AccountId};
 use std::collections::HashMap;
 
